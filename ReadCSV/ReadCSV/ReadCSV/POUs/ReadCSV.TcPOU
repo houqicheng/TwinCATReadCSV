@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="ReadCSV" Id="{8e1b1dca-04d3-4b70-90db-da206145f0ac}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM ReadCSV
+VAR
+		
+	sFileName		:STRING:='C:\TempSample\TextModeGen.csv';
+	
+	fbFileOpen: FB_FileOpen;
+	//fbFilePuts: FB_FilePuts;
+	fbFileGets: FB_FileGets;
+	fbFileClose: FB_FileClose;
+	bRead			:BOOL;
+	iStep			:E_ReadCSVStep;
+END_VAR
+
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE iStep OF
+	E_ReadCSVStep.Step_Init:
+	
+		IF	bRead THEN 
+			bRead := FALSE;			
+			iStep:=	E_ReadCSVStep.Step_Open;			
+		END_IF
+		
+	E_ReadCSVStep.Step_Open: (*open source file*)
+		fbFileOpen(sNetId:= ,sPathName:= ,nMode:= ,ePath:= ,bExecute:=FALSE,
+					tTimeout:=T#3S ,bBusy=> ,bError=> ,nErrId=> ,hFile=> );
+					
+		fbFileOpen(sNetId:= ,sPathName:= sFileName,nMode:= FOPEN_MODEREAD OR FOPEN_MODETEXT  ,ePath:=PATH_GENERIC ,bExecute:=TRUE,
+					tTimeout:=T#3S ,bBusy=> ,bError=> ,nErrId=> ,hFile=> );
+		
+		iStep := E_ReadCSVStep.Step_OpenWaite;
+		
+	E_ReadCSVStep.Step_OpenWaite:
+		fbFileOpen(bExecute:=FALSE);
+		IF NOT fbFileOpen.bBusy THEN 
+			IF NOT fbFileOpen.bError THEN 
+				iStep := E_ReadCSVStep.Step_ReadSingleLine;
+			ELSE	(*error file not found?*)
+				iStep := 
+			END_IF			
+		END_IF
+
+	
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="ReadCSV">
+      <LineId Id="5" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="24" Count="1" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="44" Count="1" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="55" Count="1" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="63" Count="1" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="18" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

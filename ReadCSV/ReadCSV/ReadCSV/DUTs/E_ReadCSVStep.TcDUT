@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="E_ReadCSVStep" Id="{204ef1e6-0cae-48b7-b7e0-f77d599e2358}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_ReadCSVStep :
+(
+	Step_Init := 0,
+	Step_Open	:= 10,	
+	Step_OpenWaite		:= 20,
+	Step_ReadSingleLine		:= 30,
+	
+	Step_Error		:= 999
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
