@@ -9,6 +9,12 @@ TYPE E_ReadCSVStep :
 	Step_Open	:= 10,	
 	Step_OpenWaite		:= 20,
 	Step_ReadSingleLine		:= 30,
+	Step_ReadSingleLineWait	,
+	
+	Step_Close	,
+	
+	
+	
 	
 	Step_Error		:= 999
 );
