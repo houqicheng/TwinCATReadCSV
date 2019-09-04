@@ -13,6 +13,8 @@ VAR
 	bRead			:BOOL;
 	iStep			:E_ReadCSVStep;
 	sCSVLine		:STRING;
+	fbReader: FB_CSVMemBufferReader;
+	sCSVField		:T_MaxString;
 END_VAR
 
 
@@ -59,13 +61,25 @@ END_VAR
 					(* FB_FileGets returns text line without the CR (carriage return) character.
 					We have to restore the CR character (replace the $L character with $R$L characters) *)
 					IF RIGHT(sCSVLine,1) = '$L' THEN 
-						sCSVLine := REPLACE(STR1:= sCSVLine,STR2:= '$R$L', P:= LEN(STR:= sCSVLine),L:=1);
+						sCSVLine := REPLACE(STR1:= sCSVLine,STR2:= '$R$L', P:= LEN(STR:= sCSVLine),L:=2);
 					END_IF
-				END_IF				
+					iStep := E_ReadCSVStep.Step_ParseSingleLine;
+				END_IF	
+				iStep:= E_ReadCSVStep.Step_Error;			
 			END_IF
 		END_IF
 		
-		
+	E_ReadCSVStep.Step_ParseSingleLine:
+			
+		fbReader.eCmd := eEnumCmd_First; (*Read first field value*)
+		REPEAT
+			fbReader(pBuffer:=ADR(sCSVLine) ,cbBuffer:= SIZEOF(sCSVLine),bOk=> ,getValue=>sCSVField ,pValue=> ,cbValue=> ,bCRLF=> ,cbRead=> );
+			IF fbReader.bOk THEN 
+				fbReader.eCmd := eEnumCmd_Next;
+				
+			END_IF
+			
+		END_REPEAT
 		
 		
 		
@@ -111,10 +125,23 @@ END_CASE]]></ST>
       <LineId Id="116" Count="0" />
       <LineId Id="120" Count="1" />
       <LineId Id="117" Count="2" />
+      <LineId Id="137" Count="0" />
       <LineId Id="115" Count="0" />
+      <LineId Id="138" Count="0" />
       <LineId Id="112" Count="0" />
       <LineId Id="110" Count="0" />
-      <LineId Id="92" Count="11" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="156" Count="1" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="94" Count="9" />
       <LineId Id="18" Count="0" />
     </LineIds>
   </POU>

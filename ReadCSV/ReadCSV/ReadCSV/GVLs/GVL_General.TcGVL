@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <GVL Name="GVL_General" Id="{1b3fd15b-5b52-4df0-ba52-42c3fdfcd81c}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	
+	database: ARRAY[1..100, 1..100] OF STRING;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
