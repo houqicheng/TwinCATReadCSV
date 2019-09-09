@@ -15,6 +15,10 @@ VAR
 	sCSVLine		:STRING;
 	fbReader: FB_CSVMemBufferReader;
 	sCSVField		:T_MaxString;
+	nRow			:INT;
+	nColumn			:INT;
+	hFile			:UINT;
+	bBusy			:BOOL;
 END_VAR
 
 
@@ -23,7 +27,12 @@ END_VAR
       <ST><![CDATA[CASE iStep OF
 	E_ReadCSVStep.Step_Init:	
 		IF	bRead THEN 
-			bRead := FALSE;			
+			bRead := FALSE;	
+			bBusy := TRUE;
+			hFile := 0;
+			nRow := 0;
+			nColumn := 0;
+			MEMSET(destAddr:=ADR(GVL_General.database),0,fillByte:= SIZEOF(GVL_General.database));			
 			iStep:=	E_ReadCSVStep.Step_Open;			
 		END_IF
 		
@@ -48,7 +57,7 @@ END_VAR
 	E_ReadCSVStep.Step_ReadSingleLine:
 		fbFileGets(sNetId:= ,hFile:= ,bExecute:=FALSE,tTimeout:=,bBusy=> ,bError=> ,nErrId=> ,sLine=> ,bEOF=> );
 		
-		fbFileGets(sNetId:= ,hFile:= ,bExecute:=TRUE,tTimeout:=T#3S,bBusy=> ,bError=> ,nErrId=> ,sLine=>sCSVLine ,bEOF=> );
+		fbFileGets(sNetId:= ,hFile:=hFile ,bExecute:=TRUE,tTimeout:=T#3S,bBusy=> ,bError=> ,nErrId=> ,sLine=>sCSVLine ,bEOF=> );
 		iStep := E_ReadCSVStep.Step_ReadSingleLineWait;
 		
 	E_ReadCSVStep.Step_ReadSingleLineWait:(*wait until fbFileGets not busy*)
@@ -65,7 +74,7 @@ END_VAR
 					END_IF
 					iStep := E_ReadCSVStep.Step_ParseSingleLine;
 				END_IF	
-				iStep:= E_ReadCSVStep.Step_Error;			
+				iStep:= E_ReadCSVStep.Step_ErrorOrEnd;			
 			END_IF
 		END_IF
 		
@@ -73,17 +82,44 @@ END_VAR
 			
 		fbReader.eCmd := eEnumCmd_First; (*Read first field value*)
 		REPEAT
-			fbReader(pBuffer:=ADR(sCSVLine) ,cbBuffer:= SIZEOF(sCSVLine),bOk=> ,getValue=>sCSVField ,pValue=> ,cbValue=> ,bCRLF=> ,cbRead=> );
+			fbReader(pBuffer:=ADR(sCSVLine) ,cbBuffer:= SIZEOF(sCSVLine),bOk=> ,getValue=>sCSVField ,pValue=> ,cbValue=> ,bCRLF=> ,cbRead=> );			
 			IF fbReader.bOk THEN 
-				fbReader.eCmd := eEnumCmd_Next;
-				
-			END_IF
+				fbReader.eCmd := eEnumCmd_Next;	
+					IF(nRow <= GVL_General.MAX_CSV_ROWS) THEN 
+						IF(nColumn <= GVL_General.MAX_CSV_COLUMNS) THEN 
+							GVL_General.database[nRow,nColumn] := CSVFIELD_TO_STRING(in:= sCSVField,bQM:= FALSE);
+						END_IF
+					END_IF			
 			
+				nColumn := nColumn + 1;
+				IF(fbReader.bCRLF) THEN 
+					nColumn := 0;
+					nRow := nRow + 1;
+				END_IF
+			ELSE	
+				iStep:= E_ReadCSVStep.Step_ReadSingleLine;
+			END_IF		
+		UNTIL NOT fbReader.bOk	(*maybe never go through this step???*)
 		END_REPEAT
 		
+	E_ReadCSVStep.Step_Close: (*close the source file*)
+		fbFileClose(sNetId:= ,hFile:=fbFileOpen.hFile ,bExecute:= FALSE,tTimeout:= ,bBusy=> ,bError=> ,nErrId=> );
 		
+		fbFileClose(sNetId:= ,hFile:=hFile ,bExecute:= TRUE,tTimeout:=T#3S ,bBusy=> ,bError=> ,nErrId=> );		
+		IF NOT	fbFileClose.bBusy THEN 
+			IF	NOT fbFileClose.bError THEN 
+				hFile := 0;
+				iStep := E_ReadCSVStep.Step_ErrorOrEnd;
+			END_IF
+		END_IF
 		
-		
+	E_ReadCSVStep.Step_ErrorOrEnd:
+		IF (hFile <> 0) THEN 
+			iStep := E_ReadCSVStep.Step_Close;
+		ELSE
+			bBusy := FALSE;
+			iStep := E_ReadCSVStep.Step_Init;
+		END_IF
 		
 		
 		
@@ -96,6 +132,8 @@ END_CASE]]></ST>
       <LineId Id="5" Count="0" />
       <LineId Id="17" Count="0" />
       <LineId Id="24" Count="1" />
+      <LineId Id="218" Count="2" />
+      <LineId Id="222" Count="1" />
       <LineId Id="29" Count="0" />
       <LineId Id="26" Count="0" />
       <LineId Id="31" Count="0" />
@@ -137,11 +175,35 @@ END_CASE]]></ST>
       <LineId Id="142" Count="0" />
       <LineId Id="145" Count="0" />
       <LineId Id="156" Count="1" />
-      <LineId Id="159" Count="0" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="183" Count="2" />
+      <LineId Id="182" Count="0" />
       <LineId Id="158" Count="0" />
-      <LineId Id="154" Count="0" />
+      <LineId Id="187" Count="2" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="193" Count="1" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="186" Count="0" />
       <LineId Id="144" Count="0" />
-      <LineId Id="94" Count="9" />
+      <LineId Id="94" Count="1" />
+      <LineId Id="196" Count="0" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="205" Count="0" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="207" Count="1" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="98" Count="5" />
       <LineId Id="18" Count="0" />
     </LineIds>
   </POU>

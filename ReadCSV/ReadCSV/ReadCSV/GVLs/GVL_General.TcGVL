@@ -5,6 +5,11 @@
 VAR_GLOBAL
 	
 	database: ARRAY[1..100, 1..100] OF STRING;
+END_VAR
+
+VAR_GLOBAL CONSTANT
+	MAX_CSV_COLUMNS			:INT:=100;
+	MAX_CSV_ROWS			: INT:=100;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

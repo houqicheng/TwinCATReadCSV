@@ -18,7 +18,8 @@ TYPE E_ReadCSVStep :
 	
 	
 	
-	Step_Error		:= 999
+	
+	Step_ErrorOrEnd		:= 999
 );
 END_TYPE
 ]]></Declaration>
