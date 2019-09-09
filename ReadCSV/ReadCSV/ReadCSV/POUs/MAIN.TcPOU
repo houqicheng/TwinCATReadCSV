@@ -15,7 +15,9 @@ END_IF
 
 
 
-	ReadCSV();
+	//ReadCSV();
+	
+	ReadCSVSecondPractice();
 	
 	
 	]]></ST>
@@ -25,6 +27,7 @@ END_IF
       <LineId Id="13" Count="2" />
       <LineId Id="6" Count="0" />
       <LineId Id="2" Count="0" />
+      <LineId Id="24" Count="1" />
       <LineId Id="11" Count="1" />
       <LineId Id="7" Count="0" />
     </LineIds>

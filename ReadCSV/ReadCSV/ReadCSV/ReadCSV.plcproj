@@ -14,6 +14,9 @@
     <LibraryReferences>{77838f33-60ee-44e2-8163-03182230b264}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DUTs\eCSVFileReadStep.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\E_ReadCSVStep.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -28,6 +31,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\ReadCSV.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\ReadCSVSecondPractice.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

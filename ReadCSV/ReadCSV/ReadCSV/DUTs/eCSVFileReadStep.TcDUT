@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="eCSVFileReadStep" Id="{289ff13d-f46d-414d-9e91-d115278216bb}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE eCSVFileReadStep :
+(
+	iStep_Init := 0,
+	iStep_Open,
+	iStep_OpenWait,
+	
+	iStep_ReadSingleLine,
+	iStep_ParseSingleLine,
+	
+	
+	
+	
+	iStep_CloseOrError
+	
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

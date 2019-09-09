@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="ReadCSVSecondPractice" Id="{4f6e845f-7504-4b65-a464-f337e80da650}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM ReadCSVSecondPractice
+VAR
+	
+	iStep		:eCSVFileReadStep;
+	nRow			:INT:=0;
+	nColumn			:INT:=0;
+	bRead			:BOOL;
+	handleFile		:UINT;
+	fbFileClose: FB_FileClose;
+	fbFileGets: FB_FileGets;
+	fbFileOpen: FB_FileOpen;
+	fbRead: FB_CSVMemBufferReader;
+	FilePath		:STRING:= 'C:\Temp\TextModeGen.csv';
+	sCSVLine			:T_MaxString;
+	bReadError: BOOL;
+	sCSVField: T_MaxString;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE iStep OF
+	eCSVFileReadStep.iStep_Init:
+		IF	bRead THEN 
+			bRead := FALSE;
+			nRow := 0;
+			nColumn := 0;
+			MEMSET(ADR(GVL_General.dataArray),0,SIZEOF(GVL_General.dataArray));
+			iStep := eCSVFileReadStep.iStep_Open;
+		END_IF
+		
+	eCSVFileReadStep.iStep_Open:	(*prepare to open source file*)
+		fbFileOpen(bExecute:=FALSE);
+					
+		fbFileOpen(sNetId:= ,sPathName:=FilePath ,nMode:= FOPEN_MODEREAD OR FOPEN_MODETEXT,ePath:=PATH_GENERIC ,bExecute:=TRUE,
+					tTimeout:=T#3S ,bBusy=> ,bError=> ,nErrId=> ,hFile=> handleFile);
+					
+		iStep := eCSVFileReadStep.iStep_OpenWait;
+		
+	eCSVFileReadStep.iStep_OpenWait:
+
+			fbFileOpen(sNetId:= ,sPathName:=FilePath ,nMode:= FOPEN_MODEREAD,ePath:=PATH_GENERIC ,bExecute:=FALSE,
+					tTimeout:=T#3S ,bBusy=> ,bError=> ,nErrId=> ,hFile=> handleFile);	
+		IF NOT fbFileOpen.bBusy THEN 
+			IF NOT fbFileOpen.bError THEN 
+				iStep := eCSVFileReadStep.iStep_ReadSingleLine;	
+			ELSE
+				iStep := eCSVFileReadStep.iStep_CloseOrError;
+			END_IF
+		END_IF
+		
+		
+	eCSVFileReadStep.iStep_ReadSingleLine:
+	
+		fbFileGets(sNetId:= ,hFile:=handleFile,bExecute:=FALSE,tTimeout:=T#3S,
+					bBusy=> ,bError=> ,nErrId=> ,sLine=> sCSVLine,bEOF=> );
+					
+		fbFileGets(sNetId:= ,hFile:=handleFile,bExecute:=TRUE,tTimeout:=T#3S,
+					bBusy=> ,bError=> ,nErrId=> ,sLine=>sCSVLine,bEOF=> );
+					
+		fbFileGets(sNetId:= ,hFile:=handleFile,bExecute:=FALSE,tTimeout:=T#3S,
+					bBusy=> ,bError=> ,nErrId=> ,sLine=> sCSVLine,bEOF=> );	
+					
+		IF NOT fbFileGets.bBusy THEN 
+			IF NOT fbFileGets.bError THEN 
+				IF fbFileGets.bEOF THEN 
+					iStep := eCSVFileReadStep.iStep_CloseOrError;
+				END_IF
+				//add CRLF to the end of the CSVField
+				IF(RIGHT(sCSVLine,1) = '$N') THEN 
+					sCSVLine := REPLACE(sCSVLine,'$R$N',2,Len(sCSVLine));
+					iStep := eCSVFileReadStep.iStep_ParseSingleLine;
+				END_IF				
+			ELSE
+				iStep := eCSVFileReadStep.iStep_CloseOrError;
+			END_IF
+		END_IF
+		
+	eCSVFileReadStep.iStep_ParseSingleLine:
+		fbRead.eCmd := eEnumCmd_First;
+		REPEAT
+			fbRead(pBuffer:=ADR(sCSVLine),cbBuffer:=SIZEOF(sCSVLine),bOk=> , 
+				getValue=>sCSVField ,pValue=> ,cbValue=>,bCRLF=> ,cbRead=> );			
+			IF	fbRead.bOk THEN 
+				fbRead.eCmd := eEnumCmd_Next;
+				IF NOT fbRead.bCRLF THEN 
+					GVL_General.dataArray[nRow,nColumn] := CSVFIELD_TO_STRING(in:= sCSVField,bQM:= FALSE);
+					nColumn :=nColumn + 1;
+				ELSE
+					nColumn := 0;
+					nRow := nRow + 1;
+					iStep := eCSVFileReadStep.iStep_ReadSingleLine;
+				END_IF
+			END_IF
+		UNTIL NOT fbRead.bOk
+		END_REPEAT		
+		
+		
+	eCSVFileReadStep.iStep_CloseOrError:
+		fbFileClose(sNetId:= ,hFile:=handleFile ,bExecute:=FALSE,tTimeout:= ,bBusy=> ,bError=> ,nErrId=> );
+		fbFileClose(sNetId:= ,hFile:=handleFile ,bExecute:=TRUE,tTimeout:= ,bBusy=> ,bError=> ,nErrId=> );
+		IF NOT fbFileClose.bBusy THEN 
+			IF NOT fbFileClose.bError THEN 
+
+				iStep := eCSVFileReadStep.iStep_Init;
+			ELSE
+				bReadError := TRUE;
+			END_IF
+		END_IF	
+END_CASE
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="ReadCSVSecondPractice">
+      <LineId Id="8" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="157" Count="1" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="43" Count="1" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="167" Count="8" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="87" Count="1" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="71" Count="1" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="79" Count="1" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="74" Count="1" />
+      <LineId Id="89" Count="3" />
+      <LineId Id="125" Count="1" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="77" Count="1" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="148" Count="1" />
+      <LineId Id="151" Count="1" />
+      <LineId Id="154" Count="1" />
+      <LineId Id="159" Count="4" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="146" Count="1" />
+      <LineId Id="104" Count="1" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="116" Count="1" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="121" Count="1" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="9" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
