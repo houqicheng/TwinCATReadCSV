@@ -3,16 +3,29 @@
   <POU Name="MAIN" Id="{534ab4b7-690d-4c49-9055-9f6244e09a5e}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
+	bChangeSeparatorToComma: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[IF bChangeSeparatorToComma THEN
+	DEFAULT_CSV_FIELD_SEP := 16#2C;(* Comma ASCII code *)
+ELSE
+	DEFAULT_CSV_FIELD_SEP := 16#3B;(* Semicolon ASCII code *)
+END_IF
+
+
+
 	ReadCSV();
+	
+	
 	]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
+      <LineId Id="16" Count="3" />
+      <LineId Id="13" Count="2" />
       <LineId Id="6" Count="0" />
       <LineId Id="2" Count="0" />
+      <LineId Id="11" Count="1" />
       <LineId Id="7" Count="0" />
     </LineIds>
   </POU>

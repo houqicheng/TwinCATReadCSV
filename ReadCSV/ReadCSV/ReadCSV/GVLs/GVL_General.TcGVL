@@ -4,12 +4,12 @@
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
 	
-	database: ARRAY[1..100, 1..100] OF STRING;
+	database: ARRAY[0..MAX_CSV_ROWS, 0..MAX_CSV_COLUMNS] OF STRING;
 END_VAR
 
 VAR_GLOBAL CONSTANT
-	MAX_CSV_COLUMNS			:INT:=100;
-	MAX_CSV_ROWS			: INT:=100;
+	MAX_CSV_COLUMNS			:INT:=99;
+	MAX_CSV_ROWS			: INT:=99;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>
