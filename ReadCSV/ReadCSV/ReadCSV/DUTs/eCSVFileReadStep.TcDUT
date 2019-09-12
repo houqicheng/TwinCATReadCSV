@@ -8,13 +8,9 @@ TYPE eCSVFileReadStep :
 	iStep_Init := 0,
 	iStep_Open,
 	iStep_OpenWait,
-	
 	iStep_ReadSingleLine,
-	iStep_ParseSingleLine,
-	
-	
-	
-	
+	iStep_ReadSingleWait,
+	iStep_ParseSingleLine,	
 	iStep_CloseOrError
 	
 );

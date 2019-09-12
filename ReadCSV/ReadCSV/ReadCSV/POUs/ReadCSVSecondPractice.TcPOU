@@ -59,6 +59,10 @@ END_VAR
 		fbFileGets(sNetId:= ,hFile:=handleFile,bExecute:=TRUE,tTimeout:=T#3S,
 					bBusy=> ,bError=> ,nErrId=> ,sLine=>sCSVLine,bEOF=> );
 					
+		iStep := eCSVFileReadStep.iStep_ReadSingleWait;
+
+
+	(*eCSVFileReadStep.iStep_ReadSingleWait:		
 		fbFileGets(sNetId:= ,hFile:=handleFile,bExecute:=FALSE,tTimeout:=T#3S,
 					bBusy=> ,bError=> ,nErrId=> ,sLine=> sCSVLine,bEOF=> );	
 					
@@ -75,24 +79,49 @@ END_VAR
 			ELSE
 				iStep := eCSVFileReadStep.iStep_CloseOrError;
 			END_IF
+		END_IF*)
+		
+		
+	eCSVFileReadStep.iStep_ReadSingleWait:		
+		fbFileGets(sNetId:= ,hFile:=handleFile,bExecute:=FALSE,tTimeout:=T#3S,
+					bBusy=> ,bError=> ,nErrId=> ,sLine=> sCSVLine,bEOF=> );	
+					
+		IF NOT fbFileGets.bBusy THEN 
+			IF NOT fbFileGets.bError THEN 
+				IF fbFileGets.bEOF THEN 
+					iStep := eCSVFileReadStep.iStep_CloseOrError;
+				ELSE
+				//add CRLF to the end of the CSVField
+					IF(RIGHT(sCSVLine,1) = '$N') THEN 
+						sCSVLine := REPLACE(sCSVLine,'$R$N',2,Len(sCSVLine));
+						iStep := eCSVFileReadStep.iStep_ParseSingleLine;
+					END_IF	
+				END_IF			
+			ELSE
+				iStep := eCSVFileReadStep.iStep_CloseOrError;
+			END_IF
 		END_IF
 		
 	eCSVFileReadStep.iStep_ParseSingleLine:
 		fbRead.eCmd := eEnumCmd_First;
 		REPEAT
 			fbRead(pBuffer:=ADR(sCSVLine),cbBuffer:=SIZEOF(sCSVLine),bOk=> , 
-				getValue=>sCSVField ,pValue=> ,cbValue=>,bCRLF=> ,cbRead=> );			
+					getValue=>sCSVField ,pValue=> ,cbValue=>,bCRLF=> ,cbRead=> );			
 			IF	fbRead.bOk THEN 
 				fbRead.eCmd := eEnumCmd_Next;
-				IF NOT fbRead.bCRLF THEN 
-					GVL_General.dataArray[nRow,nColumn] := CSVFIELD_TO_STRING(in:= sCSVField,bQM:= FALSE);
-					nColumn :=nColumn + 1;
-				ELSE
-					nColumn := 0;
-					nRow := nRow + 1;
-					iStep := eCSVFileReadStep.iStep_ReadSingleLine;
+				IF(nRow < GVL_General.MAX_CSV_ROWS) THEN
+					IF (nColumn < GVL_General.MAX_CSV_COLUMNS) THEN 
+						GVL_General.dataArray[nRow,nColumn] := CSVFIELD_TO_STRING(in:= sCSVField, bQM:= FALSE);											
+					END_IF					
 				END_IF
-			END_IF
+				nColumn := nColumn +1;	
+				IF(fbRead.bCRLF) THEN 
+					nColumn := 0;
+					nRow 	:= nRow + 1;
+				END_IF
+			ELSE
+				iStep := eCSVFileReadStep.iStep_ReadSingleLine;
+			END_IF			
 		UNTIL NOT fbRead.bOk
 		END_REPEAT		
 		
@@ -140,7 +169,10 @@ END_CASE
       <LineId Id="68" Count="0" />
       <LineId Id="73" Count="0" />
       <LineId Id="71" Count="1" />
+      <LineId Id="207" Count="0" />
       <LineId Id="81" Count="0" />
+      <LineId Id="205" Count="1" />
+      <LineId Id="204" Count="0" />
       <LineId Id="79" Count="1" />
       <LineId Id="85" Count="0" />
       <LineId Id="74" Count="1" />
@@ -151,16 +183,26 @@ END_CASE
       <LineId Id="83" Count="0" />
       <LineId Id="77" Count="1" />
       <LineId Id="76" Count="0" />
+      <LineId Id="245" Count="1" />
+      <LineId Id="249" Count="13" />
+      <LineId Id="266" Count="0" />
+      <LineId Id="263" Count="2" />
+      <LineId Id="247" Count="0" />
       <LineId Id="130" Count="0" />
       <LineId Id="94" Count="0" />
       <LineId Id="140" Count="0" />
       <LineId Id="145" Count="0" />
       <LineId Id="148" Count="1" />
       <LineId Id="151" Count="1" />
-      <LineId Id="154" Count="1" />
-      <LineId Id="159" Count="4" />
       <LineId Id="156" Count="0" />
-      <LineId Id="153" Count="0" />
+      <LineId Id="195" Count="0" />
+      <LineId Id="197" Count="1" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="239" Count="2" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="243" Count="1" />
+      <LineId Id="196" Count="0" />
       <LineId Id="146" Count="1" />
       <LineId Id="104" Count="1" />
       <LineId Id="69" Count="0" />

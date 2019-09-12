@@ -11,14 +11,7 @@ TYPE E_ReadCSVStep :
 	Step_ReadSingleLine		:= 30,
 	Step_ReadSingleLineWait	,
 	Step_ParseSingleLine,
-	
-	
 	Step_Close	,
-	
-	
-	
-	
-	
 	Step_ErrorOrEnd		:= 999
 );
 END_TYPE

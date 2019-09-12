@@ -102,13 +102,12 @@ END_VAR
 				nColumn := nColumn + 1;
 				IF(fbReader.bCRLF) THEN 
 					nColumn := 0;
-					nRow := nRow + 1;
-					
+					nRow := nRow + 1;					
 				END_IF
 			ELSE	
 				iStep:= E_ReadCSVStep.Step_ReadSingleLine;
 			END_IF		
-		UNTIL NOT fbReader.bOk	(*maybe never go through this step???*)
+		UNTIL NOT fbReader.bOk	
 		END_REPEAT
 		
 	E_ReadCSVStep.Step_Close: (*close the source file*)
@@ -194,7 +193,6 @@ END_CASE]]></ST>
       <LineId Id="158" Count="0" />
       <LineId Id="187" Count="2" />
       <LineId Id="191" Count="0" />
-      <LineId Id="318" Count="0" />
       <LineId Id="190" Count="0" />
       <LineId Id="193" Count="1" />
       <LineId Id="192" Count="0" />
