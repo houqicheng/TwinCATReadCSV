@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="FB_Blinking" Id="{3473e3f0-5203-43a5-b6b5-63c2e9220496}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Blinking
+VAR_INPUT
+END_VAR
+VAR_OUTPUT	
+	
+END_VAR
+VAR
+	ton1		:TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="M_Blink" Id="{ebc06794-fd21-4ea2-8b38-b16fe10121ec}">
+      <Declaration><![CDATA[METHOD M_Blink : BOOL
+VAR_OUTPUT
+	bBlink		:BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ton1(IN:= NOT ton1.Q, PT:= T#1S, Q=> , ET=> );
+
+IF	ton1.Q THEN
+	ton1(IN:= FALSE, PT:= T#1S, Q=> , ET=> );	
+	bBlink := NOT bBlink;
+END_IF
+
+
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_Blinking">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Blinking.M_Blink">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
